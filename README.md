@@ -17,8 +17,9 @@ pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-Identity integration follows the provided OpenAPI contract: `POST /oauth/login` accepts multipart
-mobile/password, `GET /ek/auth/oauth/userinfo` returns the user, and `GET /oauth/logout` signs out.
+Identity integration follows the provided API contract: `POST /oauth/login` accepts a JSON object
+with `mobile` and `password`, `GET /ek/auth/oauth/userinfo` returns the user, and
+`GET /oauth/logout` signs out.
 Configure the origin before building; Compose forwards browser-facing values as image build
 arguments.
 Local development and Compose default the identity origin to `http://59.36.5.137:1888`; override

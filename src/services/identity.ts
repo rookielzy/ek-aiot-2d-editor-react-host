@@ -51,14 +51,14 @@ export function createIdentityClient(
   return {
     loginUrl: options.loginUrl ?? "/login",
     async login(credentials) {
-      const body = new FormData();
-      body.set("mobile", credentials.mobile);
-      body.set("password", credentials.password);
       const response = await request(options.loginEndpoint, {
         method: "POST",
         credentials: "include",
-        headers: { Accept: "application/json" },
-        body,
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(credentials),
       });
       if (!response.ok) {
         throw new Error(`Login request failed: ${response.status}.`);

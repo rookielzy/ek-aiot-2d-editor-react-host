@@ -135,7 +135,7 @@ describe("identity client", () => {
     expect(tokenStore.clear).toHaveBeenCalledOnce();
   });
 
-  it("logs in with multipart credentials and stores the access token", async () => {
+  it("logs in with JSON credentials and stores the access token", async () => {
     const tokenStore = createTokenStore();
     const fetch = vi.fn().mockResolvedValue(
       Response.json({
@@ -157,9 +157,14 @@ describe("identity client", () => {
 
     const [, request] = fetch.mock.calls[0] as [string, RequestInit];
     expect(request.method).toBe("POST");
-    expect(request.body).toBeInstanceOf(FormData);
-    expect((request.body as FormData).get("mobile")).toBe("13800138001");
-    expect((request.body as FormData).get("password")).toBe("secret");
+    expect(request.headers).toMatchObject({
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    });
+    expect(JSON.parse(request.body as string)).toEqual({
+      mobile: "13800138001",
+      password: "secret",
+    });
     expect(tokenStore.set).toHaveBeenCalledWith("access-token", 604799);
   });
 
