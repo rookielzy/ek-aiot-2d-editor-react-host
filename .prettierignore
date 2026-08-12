@@ -1,0 +1,8 @@
+node_modules
+.umi
+.umi-production
+src/.umi
+src/.umi-production
+dist
+coverage
+pnpm-lock.yaml

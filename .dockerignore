@@ -1,0 +1,12 @@
+.git
+.env
+.env.*
+!.env.example
+.umi
+.umi-production
+src/.umi
+src/.umi-production
+dist
+coverage
+node_modules
+*.log

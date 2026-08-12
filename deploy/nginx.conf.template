@@ -1,0 +1,56 @@
+server {
+  listen 8080;
+  server_name _;
+
+  root /usr/share/nginx/html;
+  index index.html;
+
+  location = /_identity_userinfo {
+    internal;
+    proxy_pass ${IDENTITY_ORIGIN}${IDENTITY_USERINFO_PATH};
+    proxy_pass_request_body off;
+    proxy_set_header Content-Length "";
+    proxy_set_header Cookie $http_cookie;
+    proxy_set_header X-Authenticated-User-Id "";
+  }
+
+  location /api/agent/ {
+    auth_request /_identity_userinfo;
+    auth_request_set $authenticated_user_id $upstream_http_x_authenticated_user_id;
+
+    proxy_set_header X-Authenticated-User-Id $authenticated_user_id;
+    proxy_set_header Cookie "";
+    proxy_set_header Host $host;
+    proxy_http_version 1.1;
+    proxy_buffering off;
+    proxy_cache off;
+    proxy_read_timeout 660s;
+    proxy_send_timeout 660s;
+    proxy_pass http://agent-server:5178/v1/;
+  }
+
+  location = /api/auth/userinfo {
+    proxy_pass ${IDENTITY_ORIGIN}${IDENTITY_USERINFO_PATH};
+    proxy_set_header Host $host;
+    proxy_set_header Cookie $http_cookie;
+    proxy_set_header X-Authenticated-User-Id "";
+  }
+
+  location = /api/auth/login {
+    proxy_pass ${IDENTITY_ORIGIN}${IDENTITY_LOGIN_PATH};
+    proxy_set_header Host $host;
+    proxy_set_header Cookie $http_cookie;
+    proxy_set_header X-Authenticated-User-Id "";
+  }
+
+  location = /api/auth/logout {
+    proxy_pass ${IDENTITY_ORIGIN}${IDENTITY_LOGOUT_PATH};
+    proxy_set_header Host $host;
+    proxy_set_header Cookie $http_cookie;
+    proxy_set_header X-Authenticated-User-Id "";
+  }
+
+  location / {
+    try_files $uri $uri/ /index.html;
+  }
+}

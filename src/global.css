@@ -1,0 +1,41 @@
+:root {
+  color: #18202a;
+  background: #eef1f5;
+  font-family: Inter, "PingFang SC", "Microsoft YaHei", sans-serif;
+  letter-spacing: 0;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  min-width: 1180px;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.ant-pro-layout,
+.ant-pro-layout-container,
+.ant-pro-layout-content {
+  min-height: 0 !important;
+}
+
+.ant-pro-layout-content {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.host-loading {
+  display: flex;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}

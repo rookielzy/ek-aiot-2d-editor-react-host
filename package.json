@@ -1,0 +1,51 @@
+{
+  "name": "ek-aiot-2d-editor-react-host",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.30.2",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "build": "max build",
+    "dev": "max dev",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "postinstall": "max setup",
+    "preview": "max preview --port 8000",
+    "test": "vitest run",
+    "test:e2e": "node tests/e2e-smoke.mjs",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^5.6.1",
+    "@ant-design/pro-components": "^2.7.19",
+    "@ant-design/v5-patch-for-react-19": "^1.0.3",
+    "@ek-aiot/2d-editor-agent": "0.2.0",
+    "@ek-aiot/2d-editor-core": "0.2.0",
+    "@ek-aiot/2d-editor-react": "0.2.0",
+    "@ek-aiot/agent-protocol": "0.2.0",
+    "antd": "^5.25.4",
+    "konva": "10.2.0",
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "6.9.1",
+    "@testing-library/react": "^16.3.0",
+    "@types/node": "^24.0.10",
+    "@types/react": "^19.1.5",
+    "@types/react-dom": "^19.1.5",
+    "@umijs/max": "^4.3.24",
+    "@vitejs/plugin-react": "^4.5.2",
+    "jsdom": "^26.1.0",
+    "playwright": "^1.55.0",
+    "prettier": "3.6.2",
+    "typescript": "^5.9.2",
+    "umi-presets-pro": "^2.0.3",
+    "vite": "^6.3.5",
+    "vitest": "^3.2.4"
+  }
+}
