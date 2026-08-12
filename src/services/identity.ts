@@ -1,4 +1,11 @@
+import type { DemoTokenStore } from "./demo-token";
+
 const AUTHENTICATED_USER_ID_HEADER = "X-Authenticated-User-Id";
+
+export interface LoginCredentials {
+  mobile: string;
+  password: string;
+}
 
 export interface AuthenticatedUser {
   userId: string;
@@ -7,16 +14,19 @@ export interface AuthenticatedUser {
 }
 
 export interface IdentityClient {
+  login(credentials: LoginCredentials): Promise<void>;
   getCurrentUser(): Promise<AuthenticatedUser>;
   logout(): Promise<void>;
   loginUrl: string;
 }
 
 export interface IdentityClientOptions {
+  loginEndpoint: string;
   userInfoUrl: string;
   logoutUrl?: string;
   loginUrl?: string;
   logoutMethod?: "GET" | "POST";
+  tokenStore: DemoTokenStore;
   fetch?: typeof globalThis.fetch;
 }
 
@@ -40,12 +50,41 @@ export function createIdentityClient(
   const request = options.fetch ?? globalThis.fetch;
   return {
     loginUrl: options.loginUrl ?? "/login",
-    async getCurrentUser() {
-      const response = await request(options.userInfoUrl, {
+    async login(credentials) {
+      const body = new FormData();
+      body.set("mobile", credentials.mobile);
+      body.set("password", credentials.password);
+      const response = await request(options.loginEndpoint, {
+        method: "POST",
         credentials: "include",
         headers: { Accept: "application/json" },
+        body,
       });
-      if (response.status === 401) throw new IdentityUnauthorizedError();
+      if (!response.ok) {
+        throw new Error(`Login request failed: ${response.status}.`);
+      }
+      const payload = (await response.json()) as Record<string, unknown>;
+      const accessToken = readString(payload.access_token);
+      const expiresIn = normalizeExpiresIn(payload.expires_in);
+      if (!accessToken || expiresIn === null) {
+        throw new Error("Login response is missing a valid access token.");
+      }
+      options.tokenStore.set(accessToken, expiresIn);
+    },
+    async getCurrentUser() {
+      const token = options.tokenStore.get();
+      if (!token) throw new IdentityUnauthorizedError();
+      const response = await request(options.userInfoUrl, {
+        credentials: "include",
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.status === 401) {
+        options.tokenStore.clear();
+        throw new IdentityUnauthorizedError();
+      }
       if (!response.ok)
         throw new Error(`User information request failed: ${response.status}.`);
 
@@ -56,6 +95,7 @@ export function createIdentityClient(
         response.headers.get(AUTHENTICATED_USER_ID_HEADER),
       );
       if (!jsonUserId || !trustedUserId || jsonUserId !== trustedUserId) {
+        options.tokenStore.clear();
         throw new AuthenticatedUserMismatchError();
       }
 
@@ -71,16 +111,35 @@ export function createIdentityClient(
       };
     },
     async logout() {
-      if (!options.logoutUrl) return;
-      const response = await request(options.logoutUrl, {
-        method: options.logoutMethod ?? "POST",
-        credentials: "include",
-      });
-      if (!response.ok && response.status !== 401) {
-        throw new Error(`Logout request failed: ${response.status}.`);
+      const token = options.tokenStore.get();
+      try {
+        if (!options.logoutUrl || !token) return;
+        const response = await request(options.logoutUrl, {
+          method: options.logoutMethod ?? "GET",
+          credentials: "include",
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (!response.ok && response.status !== 401) {
+          throw new Error(`Logout request failed: ${response.status}.`);
+        }
+      } finally {
+        options.tokenStore.clear();
       }
     },
   };
+}
+
+function normalizeExpiresIn(value: unknown): number | null {
+  const expiresIn =
+    typeof value === "number"
+      ? value
+      : typeof value === "string" && value.trim()
+        ? Number(value)
+        : Number.NaN;
+  return Number.isFinite(expiresIn) && expiresIn > 0 ? expiresIn : null;
 }
 
 function normalizeUserId(value: unknown): string | null {

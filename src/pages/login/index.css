@@ -2,5 +2,40 @@
   display: grid;
   min-height: 100vh;
   place-items: center;
-  background: #f4f6f8;
+  background: #eef1f5;
+}
+
+.login-panel {
+  width: min(400px, calc(100vw - 32px));
+  padding: 28px;
+  border: 1px solid #d9dee6;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 12px 32px rgb(24 32 42 / 8%);
+}
+
+.login-heading {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.login-heading .ant-typography {
+  margin: 0;
+}
+
+.login-mark {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border-radius: 6px;
+  color: #ffffff;
+  background: #1677ff;
+  font-size: 20px;
+}
+
+.login-panel .ant-alert {
+  margin-bottom: 18px;
 }

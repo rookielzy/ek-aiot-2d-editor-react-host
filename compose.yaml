@@ -4,8 +4,9 @@ services:
       context: .
       args:
         UMI_APP_AGENT_BASE_URL: ${UMI_APP_AGENT_BASE_URL:-/api/agent}
-        UMI_APP_LOGIN_URL: ${UMI_APP_LOGIN_URL:-/api/auth/login}
-        UMI_APP_LOGOUT_METHOD: ${UMI_APP_LOGOUT_METHOD:-POST}
+        UMI_APP_LOGIN_ENDPOINT: ${UMI_APP_LOGIN_ENDPOINT:-/api/auth/login}
+        UMI_APP_LOGIN_URL: ${UMI_APP_LOGIN_URL:-/login}
+        UMI_APP_LOGOUT_METHOD: ${UMI_APP_LOGOUT_METHOD:-GET}
         UMI_APP_LOGOUT_URL: ${UMI_APP_LOGOUT_URL:-/api/auth/logout}
         UMI_APP_USER_INFO_URL: ${UMI_APP_USER_INFO_URL:-/api/auth/userinfo}
     environment:

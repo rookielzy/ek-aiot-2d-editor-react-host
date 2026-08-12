@@ -17,10 +17,16 @@ pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-The identity endpoint paths are placeholders until the existing identity service contract is
-provided. Configure the `UMI_APP_*` values before building; Compose forwards them as image build
-arguments. Authentication uses same-origin cookies; the host never stores a bearer token.
-`UMI_APP_LOGOUT_METHOD` accepts `GET` or `POST` until the identity contract is finalized.
+Identity integration follows `77.json`: `POST /oauth/login` accepts multipart mobile/password,
+`GET /ek/auth/oauth/userinfo` returns the user, and `GET /oauth/logout` signs out. Configure the
+origin before building; Compose forwards browser-facing values as image build arguments.
+
+This demonstration stores the returned access token in the JavaScript-readable
+`ek_aiot_demo_access_token` Cookie. Nginx converts it into an upstream Bearer header and never
+forwards browser-provided `x-user-header` or `X-Authenticated-User-Id`. Do not use this token
+storage design for production; production must replace it with a server-issued Secure HttpOnly
+session Cookie. The user-info service must return `X-Authenticated-User-Id`, matching its JSON
+`userId`.
 
 ## Verification
 

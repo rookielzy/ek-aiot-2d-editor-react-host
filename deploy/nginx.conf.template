@@ -1,3 +1,13 @@
+map $http_cookie $demo_access_token {
+  default "";
+  ~*(?:^|;\s*)ek_aiot_demo_access_token=([^;]+) $1;
+}
+
+map $demo_access_token $demo_authorization {
+  default "Bearer $demo_access_token";
+  "" "";
+}
+
 server {
   listen 8080;
   server_name _;
@@ -10,7 +20,11 @@ server {
     proxy_pass ${IDENTITY_ORIGIN}${IDENTITY_USERINFO_PATH};
     proxy_pass_request_body off;
     proxy_set_header Content-Length "";
-    proxy_set_header Cookie $http_cookie;
+    proxy_set_header Host $proxy_host;
+    proxy_ssl_server_name on;
+    proxy_set_header Authorization $demo_authorization;
+    proxy_set_header Cookie "";
+    proxy_set_header x-user-header "";
     proxy_set_header X-Authenticated-User-Id "";
   }
 
@@ -31,22 +45,30 @@ server {
 
   location = /api/auth/userinfo {
     proxy_pass ${IDENTITY_ORIGIN}${IDENTITY_USERINFO_PATH};
-    proxy_set_header Host $host;
-    proxy_set_header Cookie $http_cookie;
+    proxy_set_header Host $proxy_host;
+    proxy_ssl_server_name on;
+    proxy_set_header Authorization $demo_authorization;
+    proxy_set_header Cookie "";
+    proxy_set_header x-user-header "";
     proxy_set_header X-Authenticated-User-Id "";
   }
 
   location = /api/auth/login {
     proxy_pass ${IDENTITY_ORIGIN}${IDENTITY_LOGIN_PATH};
-    proxy_set_header Host $host;
-    proxy_set_header Cookie $http_cookie;
+    proxy_set_header Host $proxy_host;
+    proxy_ssl_server_name on;
+    proxy_set_header Cookie "";
+    proxy_set_header x-user-header "";
     proxy_set_header X-Authenticated-User-Id "";
   }
 
   location = /api/auth/logout {
     proxy_pass ${IDENTITY_ORIGIN}${IDENTITY_LOGOUT_PATH};
-    proxy_set_header Host $host;
-    proxy_set_header Cookie $http_cookie;
+    proxy_set_header Host $proxy_host;
+    proxy_ssl_server_name on;
+    proxy_set_header Authorization $demo_authorization;
+    proxy_set_header Cookie "";
+    proxy_set_header x-user-header "";
     proxy_set_header X-Authenticated-User-Id "";
   }
 

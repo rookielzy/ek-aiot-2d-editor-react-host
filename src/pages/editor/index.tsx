@@ -18,7 +18,7 @@ import { DemoDocumentSession } from "@/domain/demo-document-session";
 import { createDemoSessionBridge } from "@/domain/demo-session-bridge";
 import { createRestoredEditorController } from "@/domain/revision-controller";
 import { createHttpAgentTransport } from "@/services/agent-transport";
-import { identityClient } from "@/services/identity-client";
+import { demoTokenStore, identityClient } from "@/services/identity-client";
 import { performProtectedLogout } from "@/services/logout";
 
 import { createDemoDocument } from "./sample-document";
@@ -42,6 +42,7 @@ export default function EditorPage() {
       createHttpAgentTransport({
         baseUrl: runtimeConfig.agentBaseUrl,
         onUnauthorized: () => {
+          demoTokenStore.clear();
           flushSync(() => setEditorMounted(false));
           window.history.replaceState(window.history.state, "", "/login");
           window.dispatchEvent(new PopStateEvent("popstate"));
