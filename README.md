@@ -17,9 +17,12 @@ pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-Identity integration follows `77.json`: `POST /oauth/login` accepts multipart mobile/password,
-`GET /ek/auth/oauth/userinfo` returns the user, and `GET /oauth/logout` signs out. Configure the
-origin before building; Compose forwards browser-facing values as image build arguments.
+Identity integration follows the provided OpenAPI contract: `POST /oauth/login` accepts multipart
+mobile/password, `GET /ek/auth/oauth/userinfo` returns the user, and `GET /oauth/logout` signs out.
+Configure the origin before building; Compose forwards browser-facing values as image build
+arguments.
+Local development and Compose default the identity origin to `http://59.36.5.137:1888`; override
+`IDENTITY_ORIGIN` when deploying against another environment.
 
 This demonstration stores the returned access token in the JavaScript-readable
 `ek_aiot_demo_access_token` Cookie. Nginx converts it into an upstream Bearer header and never

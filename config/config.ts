@@ -1,5 +1,6 @@
 import { defineConfig } from "@umijs/max";
 
+import proxy from "./proxy";
 import routes from "./routes";
 
 export default defineConfig({
@@ -23,6 +24,7 @@ export default defineConfig({
   mako: {},
   model: {},
   presets: ["umi-presets-pro"],
+  proxy,
   routes,
   title: "EK AIoT 2D Editor",
 });
