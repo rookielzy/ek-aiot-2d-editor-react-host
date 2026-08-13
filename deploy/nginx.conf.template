@@ -1,6 +1,6 @@
 map $http_cookie $demo_access_token {
   default "";
-  ~*(?:^|;\s*)ek_aiot_demo_access_token=([^;]+) $1;
+  "~*(?:^|;\s*)ek_aiot_demo_access_token=([^;]+)" $1;
 }
 
 map $demo_access_token $demo_authorization {
