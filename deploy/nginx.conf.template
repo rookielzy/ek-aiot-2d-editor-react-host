@@ -8,6 +8,13 @@ map $demo_access_token $demo_authorization {
   "" "";
 }
 
+upstream agent_backend {
+  zone agent_backend 64k;
+  resolver 127.0.0.11 valid=10s ipv6=off;
+  resolver_timeout 5s;
+  server agent-server:5178 resolve;
+}
+
 server {
   listen 8080;
   server_name _;
@@ -40,7 +47,7 @@ server {
     proxy_cache off;
     proxy_read_timeout 660s;
     proxy_send_timeout 660s;
-    proxy_pass http://agent-server:5178/v1/;
+    proxy_pass http://agent_backend/v1/;
   }
 
   location = /api/auth/userinfo {
