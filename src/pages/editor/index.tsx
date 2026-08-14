@@ -17,6 +17,7 @@ import { runtimeConfig } from "@/config/runtime";
 import { DemoDocumentSession } from "@/domain/demo-document-session";
 import { createDemoSessionBridge } from "@/domain/demo-session-bridge";
 import { createRestoredEditorController } from "@/domain/revision-controller";
+import { bootstrapAgentDocument } from "@/services/agent-bootstrap";
 import { createHttpAgentTransport } from "@/services/agent-transport";
 import { demoTokenStore, identityClient } from "@/services/identity-client";
 import { performProtectedLogout } from "@/services/logout";
@@ -28,6 +29,7 @@ export default function EditorPage() {
   const [diagnostic, setDiagnostic] = useState<string>();
   const [revision, setRevision] = useState(0);
   const [editorMounted, setEditorMounted] = useState(true);
+  const [agentBootstrapped, setAgentBootstrapped] = useState(false);
   const sessionRef = useRef<DemoDocumentSession | undefined>(undefined);
   if (!sessionRef.current) {
     sessionRef.current = DemoDocumentSession.open({
@@ -69,22 +71,48 @@ export default function EditorPage() {
       }),
     [initial.document, initial.revision],
   );
-  const agent = useMemo<ReactEditorAgentConfigInput>(
-    () => ({
-      documentRef: initial.documentRef,
-      transport,
-      serverCapabilities: {
-        protocolVersion: AGENT_PROTOCOL_VERSION,
-        toolCatalogVersion: AGENT_TOOL_CATALOG_VERSION,
-        capabilities: { rawReasoning: true },
-      },
-      documentCommitAdapter: bridge,
-      onDiagnostic: (event) => setDiagnostic(event.message),
-    }),
-    [bridge, initial.documentRef, transport],
+  const agent = useMemo<ReactEditorAgentConfigInput | null>(
+    () =>
+      agentBootstrapped
+        ? {
+            documentRef: initial.documentRef,
+            transport,
+            serverCapabilities: {
+              protocolVersion: AGENT_PROTOCOL_VERSION,
+              toolCatalogVersion: AGENT_TOOL_CATALOG_VERSION,
+              capabilities: { rawReasoning: true },
+            },
+            documentCommitAdapter: bridge,
+            onDiagnostic: (event) => setDiagnostic(event.message),
+          }
+        : null,
+    [agentBootstrapped, bridge, initial.documentRef, transport],
   );
 
   useEffect(() => setRevision(initial.revision), [initial.revision]);
+  useEffect(() => {
+    let cancelled = false;
+    setAgentBootstrapped(false);
+    void bootstrapAgentDocument({
+      documentRef: initial.documentRef,
+      transport,
+    })
+      .then(() => {
+        if (!cancelled) setAgentBootstrapped(true);
+      })
+      .catch((error: unknown) => {
+        if (!cancelled) {
+          setDiagnostic(
+            error instanceof Error
+              ? error.message
+              : "Agent document bootstrap failed.",
+          );
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [initial.documentRef, transport]);
   useEffect(() => {
     const onLogout = () => {
       void performProtectedLogout({
