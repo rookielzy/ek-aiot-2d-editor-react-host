@@ -41,7 +41,8 @@ export function createHttpAgentTransport(
   options: CreateHttpAgentTransportOptions,
 ): HttpAgentTransport {
   const baseUrl = options.baseUrl.replace(/\/+$/, "");
-  const request = options.fetch ?? globalThis.fetch;
+  const request: typeof globalThis.fetch =
+    options.fetch ?? ((input, init) => globalThis.fetch(input, init));
   const maxConnectionAgeMs = options.maxConnectionAgeMs ?? 14 * 60 * 1_000;
   const reconnectDelayMs = options.reconnectDelayMs ?? 500;
   let activeTurn: ActiveTurn | null = null;

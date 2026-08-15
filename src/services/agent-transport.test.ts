@@ -10,6 +10,44 @@ const capabilities = {
 } as const;
 
 describe("HTTP/SSE Agent transport", () => {
+  it("calls the browser fetch implementation with the global receiver", async () => {
+    const originalFetch = globalThis.fetch;
+    const subscriber: AgentEventSubscriber = {
+      onItem: vi.fn(),
+      onError: vi.fn(),
+      onCaughtUp: vi.fn(),
+    };
+    const browserFetch = vi.fn(function (this: typeof globalThis) {
+      if (this !== globalThis) {
+        throw new TypeError("Illegal invocation");
+      }
+      return Promise.resolve(
+        new Response("event: agent-caught-up\ndata: {}\n\n", {
+          headers: { "Content-Type": "text/event-stream" },
+        }),
+      );
+    });
+    globalThis.fetch = browserFetch as typeof globalThis.fetch;
+
+    try {
+      const transport = createHttpAgentTransport({
+        baseUrl: "/api/agent",
+        reconnectDelayMs: 60_000,
+      });
+      const subscription = transport.subscribe(
+        { documentRef: "document-1" },
+        subscriber,
+      );
+
+      await vi.waitFor(() =>
+        expect(subscriber.onCaughtUp).toHaveBeenCalledOnce(),
+      );
+      subscription.unsubscribe();
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
   it("uses same-origin credentials for capabilities and commands", async () => {
     const fetch = vi
       .fn<typeof globalThis.fetch>()
