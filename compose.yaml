@@ -23,7 +23,7 @@ services:
     restart: unless-stopped
 
   agent-server:
-    image: ghcr.io/rookielzy/ek-aiot-agent-server@sha256:f99585f00cfa3476ab365b98667e531189aaa528258ad6b075ef192d62f1ecd6
+    image: ghcr.io/rookielzy/ek-aiot-agent-server@sha256:65e4fbe49af53fa43ed57b7afc957e6ad2f98496bbcf9ecee3026b7fd33bf84b
     environment:
       AGENT_MODEL_PROVIDER: deepseek
       DATABASE_URL: postgresql://agent:${POSTGRES_PASSWORD}@postgres:5432/agent
