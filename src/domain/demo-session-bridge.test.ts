@@ -7,9 +7,10 @@ import { expect, it, vi } from "vitest";
 import { createDemoSessionBridge } from "./demo-session-bridge";
 
 const document = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   canvas: {},
   nodes: [],
+  topologicalConnections: [],
 } as unknown as EditorDocument;
 
 it("lets an Agent commit consume its synchronous document-change event before manual persistence", async () => {

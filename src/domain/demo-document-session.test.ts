@@ -9,7 +9,7 @@ import {
 } from "./demo-document-session";
 
 const document = (backgroundColor: string): EditorDocument => ({
-  schemaVersion: 1,
+  schemaVersion: 2,
   canvas: {
     sizeMode: "fit",
     fixedSize: { width: 1600, height: 900 },
@@ -23,6 +23,7 @@ const document = (backgroundColor: string): EditorDocument => ({
     },
   },
   nodes: [],
+  topologicalConnections: [],
 });
 
 function createMemoryStorage(): StoragePort {

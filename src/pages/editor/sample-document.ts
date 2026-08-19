@@ -2,7 +2,7 @@ import type { EditorDocument } from "@ek-aiot/2d-editor-core";
 
 export function createDemoDocument(): EditorDocument {
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     canvas: {
       sizeMode: "fit",
       fixedSize: { width: 1600, height: 900 },
@@ -17,5 +17,6 @@ export function createDemoDocument(): EditorDocument {
       snapping: { enabled: true },
     },
     nodes: [],
+    topologicalConnections: [],
   };
 }
