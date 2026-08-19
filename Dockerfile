@@ -1,4 +1,4 @@
-FROM node:22.23.1-bookworm-slim AS build
+FROM public.ecr.aws/docker/library/node:22.23.1-bookworm-slim AS build
 
 WORKDIR /app
 RUN corepack enable
@@ -25,7 +25,7 @@ COPY tests ./tests
 COPY tsconfig.json vitest.config.ts ./
 RUN pnpm build
 
-FROM nginx:1.27.4-alpine
+FROM public.ecr.aws/docker/library/nginx:1.27.4-alpine
 
 COPY deploy/nginx.conf.template /etc/nginx/templates/default.conf.template
 COPY --from=build /app/dist /usr/share/nginx/html
