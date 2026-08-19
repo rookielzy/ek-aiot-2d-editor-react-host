@@ -39,3 +39,7 @@ body,
   justify-content: center;
   gap: 12px;
 }
+
+.host-header-actions {
+  min-width: 0;
+}

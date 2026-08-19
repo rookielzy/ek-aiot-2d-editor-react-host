@@ -1,0 +1,41 @@
+export const ZH_CN_MESSAGES = {
+  "language.switch": "切换语言",
+  "language.zhCN": "中文",
+  "language.enUS": "英文",
+  "host.logout": "退出登录",
+  "host.loading": "正在验证登录状态",
+  "login.subtitle": "登录演示工作区",
+  "login.mobile": "手机号",
+  "login.mobileRequired": "请输入手机号",
+  "login.password": "密码",
+  "login.passwordRequired": "请输入密码",
+  "login.submit": "登录",
+  "login.failed": "登录失败，请重试。",
+  "editor.document": "演示文档",
+  "editor.saved": "当前标签页已保存",
+  "editor.agentError": "Agent 连接异常",
+  "editor.workspaceLabel": "二维编辑器工作区",
+  "editor.bootstrapFailed": "Agent 文档初始化失败。",
+} as const;
+
+export type MessageKey = keyof typeof ZH_CN_MESSAGES;
+
+export const EN_US_MESSAGES = {
+  "language.switch": "Switch language",
+  "language.zhCN": "Chinese",
+  "language.enUS": "English",
+  "host.logout": "Sign out",
+  "host.loading": "Verifying your session",
+  "login.subtitle": "Sign in to the demo workspace",
+  "login.mobile": "Mobile number",
+  "login.mobileRequired": "Enter your mobile number",
+  "login.password": "Password",
+  "login.passwordRequired": "Enter your password",
+  "login.submit": "Sign in",
+  "login.failed": "Sign-in failed. Please try again.",
+  "editor.document": "Demo document",
+  "editor.saved": "Saved in this tab",
+  "editor.agentError": "Agent connection issue",
+  "editor.workspaceLabel": "2D editor workspace",
+  "editor.bootstrapFailed": "Agent document bootstrap failed.",
+} as const satisfies Record<MessageKey, string>;

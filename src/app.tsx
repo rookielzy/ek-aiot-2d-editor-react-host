@@ -1,8 +1,10 @@
 import { LogoutOutlined, UserOutlined } from "@ant-design/icons";
-import { Avatar, Button, Space, Spin, Typography } from "antd";
+import { Button, Space, Spin, Typography } from "antd";
 import "@ant-design/v5-patch-for-react-19";
 import type { ReactNode } from "react";
 
+import { LanguageSwitch } from "@/components/LanguageSwitch";
+import { LanguageProvider, useLanguage } from "@/i18n/language";
 import {
   IdentityUnauthorizedError,
   type AuthenticatedUser,
@@ -39,6 +41,35 @@ export async function getInitialState(): Promise<InitialState> {
   }
 }
 
+function HeaderActions({ avatar }: { avatar: ReactNode }) {
+  const { t } = useLanguage();
+
+  return (
+    <Space className="host-header-actions" size={12}>
+      <LanguageSwitch />
+      {avatar}
+      <Button
+        aria-label={t("host.logout")}
+        icon={<LogoutOutlined />}
+        title={t("host.logout")}
+        type="text"
+        onClick={() => window.dispatchEvent(new Event("host:logout"))}
+      />
+    </Space>
+  );
+}
+
+function HostLoading() {
+  const { t } = useLanguage();
+
+  return (
+    <div className="host-loading">
+      <Spin size="large" />
+      <Typography.Text>{t("host.loading")}</Typography.Text>
+    </div>
+  );
+}
+
 export const layout = ({ initialState }: { initialState?: InitialState }) => ({
   layout: "top",
   fixedHeader: true,
@@ -51,15 +82,7 @@ export const layout = ({ initialState }: { initialState?: InitialState }) => ({
         icon: <UserOutlined />,
         title: initialState.currentUser.username,
         render: (_: unknown, avatar: ReactNode) => (
-          <Space size={8}>
-            {avatar}
-            <Button
-              aria-label="退出登录"
-              icon={<LogoutOutlined />}
-              type="text"
-              onClick={() => window.dispatchEvent(new Event("host:logout"))}
-            />
-          </Space>
+          <HeaderActions avatar={avatar} />
         ),
       }
     : undefined,
@@ -71,12 +94,5 @@ export const layout = ({ initialState }: { initialState?: InitialState }) => ({
 });
 
 export function rootContainer(container: ReactNode): ReactNode {
-  return (
-    container ?? (
-      <div className="host-loading">
-        <Spin size="large" />
-        <Typography.Text>正在验证登录状态</Typography.Text>
-      </div>
-    )
-  );
+  return <LanguageProvider>{container ?? <HostLoading />}</LanguageProvider>;
 }

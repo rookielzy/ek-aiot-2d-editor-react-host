@@ -55,6 +55,18 @@ try {
   assert.equal(await page.getByText("Revision 0").isVisible(), true);
   assert.equal(await page.getByLabel("二维编辑器工作区").isVisible(), true);
 
+  await page.getByText("EN", { exact: true }).click();
+  await page.getByText("Demo document", { exact: true }).waitFor();
+  assert.equal(await page.getByLabel("2D editor workspace").isVisible(), true);
+  assert.equal(
+    await page.evaluate(() => localStorage.getItem("ek-aiot.host-locale")),
+    "en-US",
+  );
+  await page.reload({ waitUntil: "networkidle" });
+  await page.getByText("Demo document", { exact: true }).waitFor();
+  await page.getByText("中", { exact: true }).click();
+  await page.getByText("演示文档", { exact: true }).waitFor();
+
   const canvas = page.locator("canvas").first();
   await canvas.waitFor();
   const canvasBox = await canvas.boundingBox();

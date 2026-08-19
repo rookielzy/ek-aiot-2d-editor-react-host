@@ -6,6 +6,7 @@ import {
 import { EditorLayout, EditorMode } from "@ek-aiot/2d-editor-core";
 import {
   builtinMaterials,
+  createBuiltinMaterials,
   ReactEditorShell,
   type ReactEditorAgentConfigInput,
 } from "@ek-aiot/2d-editor-react";
@@ -17,6 +18,11 @@ import { runtimeConfig } from "@/config/runtime";
 import { DemoDocumentSession } from "@/domain/demo-document-session";
 import { createDemoSessionBridge } from "@/domain/demo-session-bridge";
 import { createRestoredEditorController } from "@/domain/revision-controller";
+import {
+  EN_US_REACT_EDITOR_MESSAGES,
+  EN_US_STAGE_UI_MESSAGES,
+} from "@/i18n/editor-messages";
+import { useLanguage } from "@/i18n/language";
 import { bootstrapAgentDocument } from "@/services/agent-bootstrap";
 import { createHttpAgentTransport } from "@/services/agent-transport";
 import { demoTokenStore, identityClient } from "@/services/identity-client";
@@ -25,11 +31,18 @@ import { performProtectedLogout } from "@/services/logout";
 import { createDemoDocument } from "./sample-document";
 import "./style.css";
 
+const EN_US_MATERIALS = createBuiltinMaterials(
+  EN_US_REACT_EDITOR_MESSAGES.materials,
+);
+
 export default function EditorPage() {
+  const { locale, t } = useLanguage();
   const [diagnostic, setDiagnostic] = useState<string>();
   const [revision, setRevision] = useState(0);
   const [editorMounted, setEditorMounted] = useState(true);
   const [agentBootstrapped, setAgentBootstrapped] = useState(false);
+  const translationRef = useRef(t);
+  translationRef.current = t;
   const sessionRef = useRef<DemoDocumentSession | undefined>(undefined);
   if (!sessionRef.current) {
     sessionRef.current = DemoDocumentSession.open({
@@ -105,7 +118,7 @@ export default function EditorPage() {
           setDiagnostic(
             error instanceof Error
               ? error.message
-              : "Agent document bootstrap failed.",
+              : translationRef.current("editor.bootstrapFailed"),
           );
         }
       });
@@ -132,14 +145,14 @@ export default function EditorPage() {
       <header className="document-bar">
         <Space size={10}>
           <FileOutlined />
-          <Typography.Text strong>演示文档</Typography.Text>
+          <Typography.Text strong>{t("editor.document")}</Typography.Text>
           <Typography.Text type="secondary" copyable>
             {initial.documentRef}
           </Typography.Text>
         </Space>
         <Space size={8}>
           <Tag icon={<CloudSyncOutlined />} color="success">
-            当前标签页已保存
+            {t("editor.saved")}
           </Tag>
           <Typography.Text type="secondary">
             Revision {revision}
@@ -151,20 +164,29 @@ export default function EditorPage() {
           banner
           closable
           type="error"
-          message="Agent 连接异常"
+          message={t("editor.agentError")}
           description={diagnostic}
           onClose={() => setDiagnostic(undefined)}
         />
       ) : null}
-      <section className="editor-workspace" aria-label="二维编辑器工作区">
+      <section
+        className="editor-workspace"
+        aria-label={t("editor.workspaceLabel")}
+      >
         {editorMounted ? (
           <ReactEditorShell
             controller={controller}
             mode={EditorMode.EDIT}
             layout={EditorLayout.FULL}
             hotkeys
-            materials={builtinMaterials}
+            materials={locale === "en-US" ? EN_US_MATERIALS : builtinMaterials}
             materialMergeStrategy="append"
+            messages={
+              locale === "en-US" ? EN_US_REACT_EDITOR_MESSAGES : undefined
+            }
+            uiMessages={
+              locale === "en-US" ? EN_US_STAGE_UI_MESSAGES : undefined
+            }
             agent={agent}
             onDocumentChange={bridge.onDocumentChange}
           />

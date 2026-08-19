@@ -2,11 +2,14 @@ import { LockOutlined, MobileOutlined } from "@ant-design/icons";
 import { Alert, Button, Form, Input, Typography } from "antd";
 import { useState } from "react";
 
+import { LanguageSwitch } from "@/components/LanguageSwitch";
+import { useLanguage } from "@/i18n/language";
 import { identityClient } from "@/services/identity-client";
 import type { LoginCredentials } from "@/services/identity";
 import "./index.css";
 
 export default function LoginPage() {
+  const { t } = useLanguage();
   const [error, setError] = useState<string>();
   const [submitting, setSubmitting] = useState(false);
 
@@ -17,13 +20,14 @@ export default function LoginPage() {
       await identityClient.login(credentials);
       window.location.replace("/");
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "登录失败，请重试。");
+      setError(reason instanceof Error ? reason.message : t("login.failed"));
       setSubmitting(false);
     }
   }
 
   return (
     <main className="login-page">
+      <LanguageSwitch className="login-language-switch" />
       <section className="login-panel" aria-labelledby="login-title">
         <div className="login-heading">
           <div className="login-mark">
@@ -33,7 +37,9 @@ export default function LoginPage() {
             <Typography.Title id="login-title" level={3}>
               EK AIoT 2D Editor
             </Typography.Title>
-            <Typography.Text type="secondary">登录演示工作区</Typography.Text>
+            <Typography.Text type="secondary">
+              {t("login.subtitle")}
+            </Typography.Text>
           </div>
         </div>
         {error ? <Alert showIcon type="error" message={error} /> : null}
@@ -44,28 +50,28 @@ export default function LoginPage() {
         >
           <Form.Item
             name="mobile"
-            label="手机号"
-            rules={[{ required: true, message: "请输入手机号" }]}
+            label={t("login.mobile")}
+            rules={[{ required: true, message: t("login.mobileRequired") }]}
           >
             <Input
               autoComplete="username"
               prefix={<MobileOutlined />}
-              placeholder="手机号"
+              placeholder={t("login.mobile")}
             />
           </Form.Item>
           <Form.Item
             name="password"
-            label="密码"
-            rules={[{ required: true, message: "请输入密码" }]}
+            label={t("login.password")}
+            rules={[{ required: true, message: t("login.passwordRequired") }]}
           >
             <Input.Password
               autoComplete="current-password"
               prefix={<LockOutlined />}
-              placeholder="密码"
+              placeholder={t("login.password")}
             />
           </Form.Item>
           <Button block htmlType="submit" loading={submitting} type="primary">
-            登录
+            {t("login.submit")}
           </Button>
         </Form>
       </section>

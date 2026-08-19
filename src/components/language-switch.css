@@ -1,0 +1,17 @@
+.language-switch {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 6px;
+  color: #5f6b7a;
+}
+
+.language-switch .ant-segmented {
+  background: #eef1f5;
+}
+
+.language-switch .ant-segmented-item-label {
+  min-width: 30px;
+  padding-inline: 7px;
+  text-align: center;
+}

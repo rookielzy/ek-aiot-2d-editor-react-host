@@ -1,8 +1,15 @@
 .login-page {
+  position: relative;
   display: grid;
   min-height: 100vh;
   place-items: center;
   background: #eef1f5;
+}
+
+.login-language-switch {
+  position: absolute;
+  top: 20px;
+  right: 24px;
 }
 
 .login-panel {
