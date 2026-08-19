@@ -13,6 +13,8 @@ import {
   type AgentTransport,
 } from "@ek-aiot/agent-protocol";
 
+import { createRandomId } from "@/shared/random-id";
+
 export interface AgentLifecycle {
   stopActiveTurn(): Promise<void>;
 }
@@ -82,7 +84,7 @@ export function createHttpAgentTransport(
         const turn = activeTurn;
         await sendCommand({
           protocolVersion: AGENT_PROTOCOL_VERSION,
-          commandId: crypto.randomUUID(),
+          commandId: createRandomId(),
           commandType: "turn.stop",
           documentRef: turn.documentRef,
           conversationId: turn.conversationId,

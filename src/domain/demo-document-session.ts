@@ -8,6 +8,8 @@ import type {
   DocumentCommitAdapter,
 } from "@ek-aiot/2d-editor-agent";
 
+import { createRandomId } from "@/shared/random-id";
+
 export const DEMO_DOCUMENT_SESSION_KEY = "ek-aiot.demo-document-session.v1";
 const MAX_RESTORABLE_REVISION = 1_000;
 
@@ -136,10 +138,6 @@ export class DemoDocumentSession
     this.storage.setItem(DEMO_DOCUMENT_SESSION_KEY, JSON.stringify(state));
     this.state = state;
   }
-}
-
-function createRandomId(): string {
-  return crypto.randomUUID();
 }
 
 function readStoredSession(
